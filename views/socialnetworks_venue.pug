@@ -1,0 +1,37 @@
+extends ./layouts/base.pug
+
+include ./mixins/navs/dashhead.pug
+
+include ./mixins/graphs/bar.pug
+
+include ./mixins/components/table.pug
+
+append head
+  title Social Networks
+  style.
+    body {
+      padding-top: 50px;
+      padding-bottom: 50px;
+    }
+
+append body
+  div.container
+    div.row
+
+      // content
+      div.col-sm-offset-1.col-sm-10
+
+        // dashhead
+        div.dashhead
+          div.dashhead-titles
+            h6.dashhead-subtitle Venues
+            h2.dashhead-title= id
+
+        hr.m-t
+
+        // placeholder
+        h4 Placeholder
+
+append scripts
+  script(src="/libs/theme-dashboard/js/chart.min.js")
+  script(src="/js/socialnetworks_venue.min.js")

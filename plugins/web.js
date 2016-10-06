@@ -95,6 +95,26 @@ internals.after = (server, next) => {
         handler: require('../controllers/index.js'),
       },
     },
+    {
+      method: 'GET',
+      path: '/socialnetworks',
+      config: {
+        description: 'Returns the social networks dashboard',
+        auth: { strategy: 'dashboards-session', mode: 'try' },
+        plugins: { 'hapi-auth-cookie': { redirectTo: '/login' } },
+        handler: require('../controllers/socialnetworks.js'),
+      },
+    },
+    {
+      method: 'GET',
+      path: '/socialnetworks/{id}',
+      config: {
+        description: 'Returns the venues dashboard',
+        auth: { strategy: 'dashboards-session', mode: 'try' },
+        plugins: { 'hapi-auth-cookie': { redirectTo: '/login' } },
+        handler: require('../controllers/socialnetworks_venue.js'),
+      },
+    },
   ]);
 
   return next();
