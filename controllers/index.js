@@ -1,5 +1,7 @@
 'use strict';
 
+const Boom = require('boom');
+
 module.exports = function handler(request, reply) {
-  return reply('Hello, world!');
+  return reply(Boom.forbidden());
 };
