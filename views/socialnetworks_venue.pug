@@ -2,16 +2,67 @@ extends ./layouts/base.pug
 
 include ./mixins/navs/dashhead.pug
 
-include ./mixins/graphs/bar.pug
-
 include ./mixins/components/table.pug
+include ./mixins/components/statcard.pug
+
+
+mixin sntitle(name, icon, collapse)
+  div(style="cursor: pointer").hr-divider.p-y
+    if collapse
+      h3(data-toggle="collapse" data-target=`#${name.toLowerCase()}`).hr-divider-content.hr-divider-heading
+        span(class=`icon-${icon}`).icon
+        = ` ${name}`
+    else
+      h3.hr-d.collapse.inivider-content.hr-divider-heading
+        span(class=`icon-${icon}`).icon
+        = ` ${name}`
+
+mixin sncard(id, collapse, rank, percentiles, kpis, info)
+  div(id=id class=(collapse ? "collapse in" : "")).row
+    div.col-sm-4
+      div.row.m-b
+        div.col-sm-12
+          +statcard(rank.label, rank.num, rank.evo, 'text-center', 'primary')
+      div.row
+        if percentiles.length
+          - const [city, total] = percentiles
+          div.col-sm-6
+            +statcard('Pctl City', city.num, city.evo, 'text-center', city.num <= 10 ? 'success' : city.num <= 30 ? 'warning' : 'danger')
+          div.col-sm-6
+            +statcard('Pctl Total', total.num, total.evo, 'text-center', total.num <= 10 ? 'success' : total.num <= 30 ? 'warning' : 'danger')
+    div.col-sm-5
+      div.row
+        if kpis.length
+          each kpi in kpis
+            div(class=(kpis.length === 1 ? "col-sm-12" : "col-sm-6"))
+              +statcard(kpi.label, kpi.num, kpi.evo, 'text-center')
+    div.col-sm-3
+      div.row
+        div.col-sm-12
+          if info.length
+            each i in info
+              h5.m-b
+                strong= ` ${i.label}:`
+                = ` ${i.data}`
 
 append head
   title Social Networks
+  link(rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css")
   style.
     body {
       padding-top: 50px;
       padding-bottom: 50px;
+    }
+    #map {
+      height: 20em;
+    }
+    .hr-divider h3:after {
+      font-family: "toolkit-entypo";
+      content: "\ea45";
+    }
+    .hr-divider h3.collapsed:after {
+      font-family: "toolkit-entypo";
+      content: "\ea48";
     }
 
 append body
@@ -22,16 +73,203 @@ append body
       div.col-sm-offset-1.col-sm-10
 
         // dashhead
-        div.dashhead
-          div.dashhead-titles
-            h6.dashhead-subtitle Venues
-            h2.dashhead-title= id
+        +dashhead(name, id, true)
 
-        hr.m-t
+        // general
+        div.row.m-b
+          div(style="text-transform: capitalize").col-sm-2
+            h3.m-b-md
+              span.label.label-default= segment
+            h5.m-b
+              strong Province:
+              = ` ${province.toLowerCase()}`
+            h5.m-b
+              strong City:
+              = ` ${city.toLowerCase()}`
+            if district
+              h5.m-b
+                strong District:
+                = ` ${district.toLowerCase()}`
+          div.col-sm-4.col-sm-offset-1
+            +table(
+              '',
+              ['SKU', 'HL month', 'HL quarter'],
+              [{'sku': 'Mahou 5 estrellas', 'hlmonth': 1000, 'hlquarter': 3000}, {'sku': 'Mahou 5 estrellas', 'hlmonth': 1000, 'hlquarter': 3000}, {'sku': 'Mahou 5 estrellas', 'hlmonth': 1000, 'hlquarter': 3000}]
+            )
+          div.col-sm-4.col-sm-offset-1
+            div(data-lat=lat data-lon=lon)#map.w-full
 
-        // placeholder
-        h4 Placeholder
+        // Twitter
+        +sntitle('Twitter', 'twitter', true)
+        if tw_id
+          +sncard(
+            'twitter',
+            true,
+            { label: 'Fans', num: tw_statuses_count, evo: null },
+            [
+              { num: 1, evo: null },
+              { num: 30, evo: null }
+            ],
+            [
+              { label: 'Statuses', num: tw_statuses_count, evo: 0.05 },
+              { label: 'Followers', num: tw_followers_count, evo: 0.05 }
+            ],
+            [
+              { label: 'Id', data: tw_id},
+              { label: 'Screen name', data: tw_screen_name},
+              { label: 'Created at', data: tw_create_at}
+            ]
+          )
+        else
+          div#twitter.row.collapse.in
+            div.col-sm-12
+              div.well.text-center
+                p No data
+
+        // Facebook
+        +sntitle('Facebook', 'facebook', true)
+        if fb_id
+          +sncard(
+            'facebook',
+            true,
+            { label: 'Fans', num: fb_fan_count, evo: null },
+            [
+              { num: 50, evo: null },
+              { num: 90, evo: null}
+            ],
+            [],
+            [{ label: 'Id', data: fb_id }]
+          )
+        else
+          div#facebook.row.collapse.in
+            div.col-sm-12
+              div.well.text-center
+                p No data
+
+        // Foursquare`
+        +sntitle('Foursquare', 'foursquare', true)
+        if fs_id
+          +sncard(
+            'foursquare',
+            true,
+            { label: 'Rating', num: fs_rating, evo: null},
+            [
+              { num: 1, evo: null },
+              { num: 30, evo: null}
+            ],
+            [
+              { label: 'Reviews', num: fs_rating_signals, evo: 0.05 },
+              { label: 'Checkins', num: fs_checkins_count, evo: 0.05 },
+              { label: 'Users', num: fs_users_count, evo: 0.05 },
+              { label: 'Tips', num: fs_tip_count, evo: 0.05 }
+            ],
+            [
+              { label: 'Id', data: fs_id },
+              { label: 'Category', data: fs_category }
+            ]
+          )
+        else
+          div#foursquare.row.collapse.in
+            div.col-sm-12
+              div.well.text-center
+                p No data
+
+        // Yelp
+        +sntitle('Yelp', 'yelp', true)
+        if yp_id
+          +sncard(
+            'yelp',
+            true,
+            { label: 'Rating', num: yp_rating, evo: null},
+            [
+              { num: 30, evo: null },
+              { num: 80, evo: null}
+            ],
+            [
+              { label: 'Reviews', num: yp_review_count, evo: 0.05 }
+            ],
+            [
+              { label: 'Id', data: yp_id },
+              { label: 'Categories', data: [yp_categories_1, yp_categories_2, yp_categories_3, yp_categories_4, yp_categories_5].filter(i => i).join(', ') }
+            ]
+          )
+        else
+          div#yelp.row.collapse.in
+            div.col-sm-12
+              div.well.text-center
+                p No data
+
+        // Tripadvisor
+        +sntitle('Tripadvisor', 'tripadvisor', true)
+        if ta_id
+          +sncard(
+            'tripadvisor',
+            true,
+            { label: 'Rating', num: ta_rating, evo: null},
+            [
+              { num: 1, evo: null },
+              { num: 30, evo: null}
+            ],
+            [
+              { label: 'Reviews', num: ta_num_reviews, evo: 0.05 }
+            ],
+            [
+              { label: 'Id', data: yp_id },
+              { label: 'Cuisine', data: ta_cuisine },
+              { label: 'Ranking', data: ta_ranking }
+            ]
+          )
+        else
+          div#tripadvisor.row.collapse.in
+            div.col-sm-12
+              div.well.text-center
+                p No data
+
+        // Michelin
+        +sntitle('Michelin', 'star', true)
+        if mi_id
+          +sncard(
+            'michelin',
+            true,
+            { label: 'Rating', num: mi_stars + mi_bib, evo: null},
+            [
+              { num: 1, evo: null },
+              { num: 30, evo: null}
+            ],
+            [],
+            [
+              { label: 'Id', data: mi_id }
+            ]
+          )
+        else
+          div#michelin.row.collapse.in
+            div.col-sm-12
+              div.well.text-center
+                p No data
+
+        // Repsol
+        +sntitle('Repsol', 'circle', true)
+        if rp_id
+          +sncard(
+            'repsol',
+            true,
+            { label: 'Rating', num: rp_rating, evo: null},
+            [
+              { num: 1, evo: null },
+              { num: 30, evo: null}
+            ],
+            [],
+            [
+              { label: 'Id', data: rp_id }
+            ]
+          )
+        else
+          div#repsol.row.collapse.in
+            div.col-sm-12
+              div.well.text-center
+                p No data
 
 append scripts
+  script(src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js")
   script(src="/libs/theme-dashboard/js/chart.min.js")
   script(src="/js/socialnetworks_venue.min.js")
