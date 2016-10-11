@@ -1,4 +1,5 @@
-mixin bar(labels, data)
+mixin bar(labels, data, options = {})
+  - const { scaleOverride, scaleSteps, scaleStartValue, scaleStepWidth } = options
   div.bar-graph
     canvas(
       width="600"
@@ -9,4 +10,8 @@ mixin bar(labels, data)
       data-scale-font-color="#a2a2a2"
       data-labels=labels
       data-value=data
+      data-scale-override=scaleOverride
+      data-scale-steps=scaleSteps
+      data-scale-start-value=scaleStartValue
+      data-scale-step-width=scaleStepWidth
     ).ex-line-graph
