@@ -22,165 +22,176 @@ append body
       div.col-sm-offset-1.col-sm-10
 
         // dashhead
-        div.dashhead
-          div.dashhead-titles
-            h6.dashhead-subtitle Overview
-            h2.dashhead-title Social Networks
-          div.btn-toolbar.dashhead-toolbar
-            div.dashhead-toolbar-item
-              select.custom-select
-                option City
-                option First option
-                option Another option
-                option Alternative
-                option Last one
-            span.dashhead-toolbar-divider.hidden-xs
-            div.dashhead-toolbar-item
-              select.custom-select
-                option Quarter
-                option First option
-                option Another option
-                option Alternative
-                option Last one
-        hr.m-t
+        +dashhead('Social Networks', 'Overview', true)
+          div.dashhead-toolbar-item
+            select.custom-select
+              option City
+              option First option
+              option Another option
+              option Alternative
+              option Last one
+          span.dashhead-toolbar-divider.hidden-xs
+          div.dashhead-toolbar-item
+            select.custom-select
+              option District
+              option First option
+              option Another option
+              option Alternative
+              option Last one
 
-        // overview
-        div.row
-          div.col-sm-offset-1.col-sm-4
-            h3.text-center.m-b Dist. by # SNs
-            div.w-full.m-x-auto
-              +table(
-                'distribution',
-                ['# SNs', 'Count'],
-                [{ 'a': '3', 'b': 10 }, { 'a': '3', 'b': 10 }, { 'a': '3', 'b': 10 }, { 'a': '3', 'b': 10 }, { 'a': '3', 'b': 10 }, { 'a': '2', 'b': 100}, {'a': '1', 'b': 1000 }]
-              )
-          div.col-sm-offset-1.col-sm-6
-            h3.text-center.m-b # venues by SN
-            div.w-full.m-x-auto
-              +bar(
-                ['Twitter', 'Facebook', 'Foursquare', 'Yelp', 'Tripadvisor', 'Michelin', 'Repsol'],
-                [{ label: 'Venues', data: [1000, 1000, 10000, 10000, 10000, 100, 100] }]
-              )
+        // check for error
+        unless error
 
-        // top new
-        div.hr-divider.m-t-md.m-b
-          h3.hr-divider-content.hr-divider-heading Top New
-        div.row
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-twitter
-              |  Twitter
-            +table('tn-twitter', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-facebook
-              |  Facebook
-            +table('tn-facebook', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-foursquare
-              |  Foursquare
-            +table('tn-foursquare', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-yelp
-              |  Yelp
-            +table('tn-yelp', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-tripadvisor
-              |  Tripadvisor
-            +table('tn-tripadvisor', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-star
-              |  Michelin
-            +table('tn-michelin', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-circle
-              |  Repsol
-            +table('tn-repsol', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
+          // overview
+          div.row
+            div.col-sm-offset-1.col-sm-4
+              h3.text-center.m-b Dist. by # SNs
+              div.w-full.m-x-auto
+                +table(
+                  '',
+                  ['# SNs', 'Count'],
+                  overview
+                )
+            div.col-sm-offset-1.col-sm-6
+              h3.text-center.m-b # venues by SN
+              div.w-full.m-x-auto
+                +bar(
+                  totals.map(row => row.source),
+                  [{ label: 'Venues', data: totals.map(row => row.count) }],
+                  {
+                    scaleOverride: true,
+                    scaleSteps: 6,
+                    scaleStartValue: 0,
+                    scaleStepWidth: 20000,
+                  }
+                )
 
-        // top trendy
-        div.hr-divider.m-t-md.m-b
-          h3.hr-divider-content.hr-divider-heading Top Trendy
-        div.row
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-twitter
-              |  Twitter
-            +table('tn-twitter', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-facebook
-              |  Facebook
-            +table('tn-facebook', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-foursquare
-              |  Foursquare
-            +table('tn-foursquare', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-yelp
-              |  Yelp
-            +table('tn-yelp', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-tripadvisor
-              |  Tripadvisor
-            +table('tn-tripadvisor', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-star
-              |  Michelin
-            +table('tn-michelin', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-circle
-              |  Repsol
-            +table('tn-repsol', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
+          // top new
+          div.hr-divider.m-t-md.m-b
+            h3.hr-divider-content.hr-divider-heading Top New
+          div.row
+            div.col-sm-3
+              h4
+                span.icon.icon-twitter
+                |  Twitter
+              +table('tn-twitter', ['Name', 'Rating'], topNew.twitter)
+            div.col-sm-3
+              h4
+                span.icon.icon-facebook
+                |  Facebook
+              +table('tn-facebook', ['Name', 'Rating'], topNew.facebook)
+            div.col-sm-3
+              h4
+                span.icon.icon-foursquare
+                |  Foursquare
+              +table('tn-foursquare', ['Name', 'Rating'], topNew.foursquare)
+            div.col-sm-3
+              h4
+                span.icon.icon-yelp
+                |  Yelp
+              +table('tn-yelp', ['Name', 'Rating'], topNew.yelp)
+          div.row.m-b
+            div.col-sm-3
+              h4
+                span.icon.icon-tripadvisor
+                |  Tripadvisor
+              +table('tn-tripadvisor', ['Name', 'Rating'], topNew.tripadvisor)
+            div.col-sm-3
+              h4
+                span.icon.icon-star
+                |  Michelin
+              +table('tn-michelin', ['Name', 'Rating'], topNew.michelin)
+            div.col-sm-3
+              h4
+                span.icon.icon-circle
+                |  Repsol
+              +table('tn-repsol', ['Name', 'Rating'], topNew.repsol)
 
-        // top draft
-        div.hr-divider.m-t-md.m-b
-          h3.hr-divider-content.hr-divider-heading Top Draft
-        div.row
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-twitter
-              |  Twitter
-            +table('tn-twitter', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-facebook
-              |  Facebook
-            +table('tn-facebook', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-foursquare
-              |  Foursquare
-            +table('tn-foursquare', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-yelp
-              |  Yelp
-            +table('tn-yelp', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-tripadvisor
-              |  Tripadvisor
-            +table('tn-tripadvisor', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-star
-              |  Michelin
-            +table('tn-michelin', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
-          div.col-sm-3.m-b
-            h4
-              span.icon.icon-circle
-              |  Repsol
-            +table('tn-repsol', ['Name', 'Rating'], [{ name: 'a', rating: 10 }, { name: 'b', rating: 9 }, { name: 'c', rating: 8 }])
+          // top trendy
+          div.hr-divider.m-t-md.m-b
+            h3.hr-divider-content.hr-divider-heading Top Trendy
+          div.row
+            div.col-sm-3
+              h4
+                span.icon.icon-twitter
+                |  Twitter
+              +table('tn-twitter', ['Name', 'Count'], topTrendy.twitter)
+            div.col-sm-3
+              h4
+                span.icon.icon-facebook
+                |  Facebook
+              +table('tn-facebook', ['Name', 'Count'], topTrendy.facebook)
+            div.col-sm-3
+              h4
+                span.icon.icon-foursquare
+                |  Foursquare
+              +table('tn-foursquare', ['Name', 'Count'], topTrendy.foursquare)
+            div.col-sm-3
+              h4
+                span.icon.icon-yelp
+                |  Yelp
+              +table('tn-yelp', ['Name', 'Count'], topTrendy.yelp)
+          div.row.m-b
+            div.col-sm-3
+              h4
+                span.icon.icon-tripadvisor
+                |  Tripadvisor
+              +table('tn-tripadvisor', ['Name', 'Count'], topTrendy.tripadvisor)
+            div.col-sm-3
+              h4
+                span.icon.icon-star
+                |  Michelin
+              +table('tn-michelin', ['Name', 'Count'], topTrendy.michelin)
+            div.col-sm-3
+              h4
+                span.icon.icon-circle
+                |  Repsol
+              +table('tn-repsol', ['Name', 'Count'], topTrendy.repsol)
+
+          // top draft
+          div.hr-divider.m-t-md.m-b
+            h3.hr-divider-content.hr-divider-heading Top Draft
+          div.row
+            div.col-sm-3
+              h4
+                span.icon.icon-twitter
+                |  Twitter
+              +table('tn-twitter', ['Name', 'Delta'], topDraft.twitter)
+            div.col-sm-3
+              h4
+                span.icon.icon-facebook
+                |  Facebook
+              +table('tn-facebook', ['Name', 'Delta'], topDraft.facebook)
+            div.col-sm-3
+              h4
+                span.icon.icon-foursquare
+                |  Foursquare
+              +table('tn-foursquare', ['Name', 'Delta'], topDraft.foursquare)
+            div.col-sm-3
+              h4
+                span.icon.icon-yelp
+                |  Yelp
+              +table('tn-yelp', ['Name', 'Delta'], topDraft.yelp)
+          div.row.m-b
+            div.col-sm-3
+              h4
+                span.icon.icon-tripadvisor
+                |  Tripadvisor
+              +table('tn-tripadvisor', ['Name', 'Delta'], topDraft.tripadvisor)
+            div.col-sm-3
+              h4
+                span.icon.icon-star
+                |  Michelin
+              +table('tn-michelin', ['Name', 'Delta'], topDraft.michelin)
+            div.col-sm-3
+              h4
+                span.icon.icon-circle
+                |  Repsol
+              +table('tn-repsol', ['Name', 'Delta'], topDraft.repsol)
+        else
+
+          // error message
+          p Could not retrieve data, please try again in a few minutes.
 
 append scripts
   script(src="/libs/theme-dashboard/js/chart.min.js")
