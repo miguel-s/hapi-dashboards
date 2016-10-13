@@ -103,6 +103,12 @@ internals.after = (server, next) => {
         auth: { strategy: 'dashboards-session', mode: 'try' },
         plugins: { 'hapi-auth-cookie': { redirectTo: '/login' } },
         handler: require('../controllers/socialnetworks.js'),
+        validate: {
+          query: {
+            city: Joi.string().alphanum().min(3).max(30).optional(),
+            district: Joi.string().alphanum().min(3).max(30).optional(),
+          },
+        },
       },
     },
     {
