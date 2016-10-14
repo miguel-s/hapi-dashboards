@@ -97,7 +97,7 @@ internals.after = (server, next) => {
     },
     {
       method: 'GET',
-      path: '/socialnetworks',
+      path: '/socialnetworks/overview',
       config: {
         description: 'Returns the social networks dashboard',
         auth: { strategy: 'dashboards-session', mode: 'try' },
@@ -105,20 +105,25 @@ internals.after = (server, next) => {
         handler: require('../controllers/socialnetworks.js'),
         validate: {
           query: {
-            city: Joi.string().alphanum().min(3).max(30).optional(),
-            district: Joi.string().alphanum().min(3).max(30).optional(),
+            city: Joi.string().min(3).max(30).optional(),
+            district: Joi.string().min(3).max(30).optional(),
           },
         },
       },
     },
     {
       method: 'GET',
-      path: '/socialnetworks/{id}',
+      path: '/socialnetworks/venue/{id}',
       config: {
         description: 'Returns the venues dashboard',
         auth: { strategy: 'dashboards-session', mode: 'try' },
         plugins: { 'hapi-auth-cookie': { redirectTo: '/login' } },
         handler: require('../controllers/socialnetworks_venue.js'),
+        validate: {
+          params: {
+            id: Joi.string().alphanum().length(12).optional(),
+          },
+        },
       },
     },
   ]);
