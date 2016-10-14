@@ -3,8 +3,27 @@ extends ./layouts/base.pug
 include ./mixins/navs/dashhead.pug
 
 include ./mixins/graphs/bar.pug
+include ./mixins/graphs/doughnut.pug
 
 include ./mixins/components/table.pug
+
+mixin sntitle(name, icon)
+  div.hr-divider.m-t-md.m-b
+    h3.hr-divider-content.hr-divider-heading
+      span(class=`icon-${icon}`).icon
+      = ` ${name}`
+
+mixin sncard(rows)
+  each line in [0, 1, 2]
+    div.row
+      each row, index in rows
+        if index >= line * 3 && index < (line + 1) * 3
+          div.col-sm-4
+            div.panel.panel-default
+              div.panel-heading.text-center
+                span(class=`icon-${row.icon}`).icon
+                = ` ${row.name}`
+              +table(row.name.toLowerCase(), row.labels, row.data)
 
 append head
   title Social Networks
@@ -23,171 +42,100 @@ append body
 
         // dashhead
         +dashhead('Social Networks', 'Overview', true)
-          div.dashhead-toolbar-item
-            select.custom-select
-              option City
-              option First option
-              option Another option
-              option Alternative
-              option Last one
-          span.dashhead-toolbar-divider.hidden-xs
-          div.dashhead-toolbar-item
-            select.custom-select
-              option District
-              option First option
-              option Another option
-              option Alternative
-              option Last one
+          ul(style="text-transform: capitalize").nav.nav-pills.dashhead-toolbar-item
+            li(role="presentation").dropdown
+              a(href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true").dropdown-toggle
+                = filters.city === 'all' ? 'All Cities' : filters.city
+                span.caret
+              ul.dropdown-menu
+                li
+                  a(href="?city=all&district=all") All Cities
+                li(role="separator").divider
+                li
+                  a(href="?city=madrid&district=all") Madrid
+                li
+                  a(href="?city=barcelona&district=all") Barcelona
+            li(role="presentation").dropdown
+              a(href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true").dropdown-toggle
+                = filters.district === 'all' ? 'All Districts' : filters.district
+                span.caret
+              ul.dropdown-menu
+                li
+                  a(href=`?city=${filters.city}&district=all`) All Districts
+                li(role="separator").divider
+                li.dropdown-header Madrid
+                li
+                  a(href="?city=madrid&district=chamberí") Chamberí
+                li.dropdown-header Barcelona
+                li
+                  a(href="?city=barcelona&district=gràcia") Gràcia
 
         // check for error
         unless error
 
           // overview
-          div.row
-            div.col-sm-offset-1.col-sm-4
-              h3.text-center.m-b Dist. by # SNs
-              div.w-full.m-x-auto
-                +table(
-                  '',
-                  ['# SNs', 'Count'],
-                  overview
+          div.row.m-t-lg
+            div.col-sm-4
+              div.w-lg.m-x-auto.text-center
+                +doughnut(
+                  'Social Networks',
+                  'Number of venues by number of social networks',
+                  overview.map(row => ({ label: row.count_rrss, value: row.count }))
                 )
-            div.col-sm-offset-1.col-sm-6
-              h3.text-center.m-b # venues by SN
-              div.w-full.m-x-auto
+            div.col-sm-8
+              div.w-full.m-x-auto.text-center
                 +bar(
+                  'Social Networks',
+                  'Number of venues by social network',
                   totals.map(row => row.source),
-                  [{ label: 'Venues', data: totals.map(row => row.count) }],
+                  [
+                    { label: 'Total', data: totals.map(row => row.count), fillColor: '#1ca8dd' },
+                    { label: 'New', data: totals.map(row => row.count), fillColor: '#1bc98e' },
+                    { label: 'Lost', data: totals.map(row => row.count), fillColor: '#e64759' }
+                  ],
                   {
                     scaleOverride: true,
-                    scaleSteps: 6,
+                    scaleSteps: 5,
                     scaleStartValue: 0,
-                    scaleStepWidth: 20000,
+                    scaleStepWidth: Math.ceil(Math.max(...totals.map(row => row.count)) / 5),
                   }
                 )
 
+          // top total
+          +sntitle('Top Total', 'trophy')
+          +sncard([
+            { name: 'Twitter', icon: 'twitter', labels: ['Name', 'Score', 'Statuses', 'Evo'], data: topTotal.twitter },
+            { name: 'Facebook', icon: 'facebook', labels: ['Name', 'Score', 'Fans', 'Evo'], data: topTotal.facebook },
+            { name: 'Foursquare', icon: 'foursquare', labels: ['Name', 'Score', 'Rating', 'Evo'], data: topTotal.foursquare },
+            { name: 'Yelp', icon: 'yelp', labels: ['Name', 'Score', 'Rating', 'Evo'], data: topTotal.yelp },
+            { name: 'Tripadvisor', icon: 'tripadvisor', labels: ['Name', 'Score', 'Rating', 'Evo'], data: topTotal.tripadvisor },
+            { name: 'Michelin', icon: 'star', labels: ['Name', 'Score', 'Stars', 'Evo'], data: topTotal.michelin },
+            { name: 'Repsol', icon: 'circle', labels: ['Name', 'Score', 'Suns', 'Evo'], data: topTotal.repsol },
+          ])
+
           // top new
-          div.hr-divider.m-t-md.m-b
-            h3.hr-divider-content.hr-divider-heading Top New
-          div.row
-            div.col-sm-3
-              h4
-                span.icon.icon-twitter
-                |  Twitter
-              +table('tn-twitter', ['Name', 'Rating'], topNew.twitter)
-            div.col-sm-3
-              h4
-                span.icon.icon-facebook
-                |  Facebook
-              +table('tn-facebook', ['Name', 'Rating'], topNew.facebook)
-            div.col-sm-3
-              h4
-                span.icon.icon-foursquare
-                |  Foursquare
-              +table('tn-foursquare', ['Name', 'Rating'], topNew.foursquare)
-            div.col-sm-3
-              h4
-                span.icon.icon-yelp
-                |  Yelp
-              +table('tn-yelp', ['Name', 'Rating'], topNew.yelp)
-          div.row.m-b
-            div.col-sm-3
-              h4
-                span.icon.icon-tripadvisor
-                |  Tripadvisor
-              +table('tn-tripadvisor', ['Name', 'Rating'], topNew.tripadvisor)
-            div.col-sm-3
-              h4
-                span.icon.icon-star
-                |  Michelin
-              +table('tn-michelin', ['Name', 'Rating'], topNew.michelin)
-            div.col-sm-3
-              h4
-                span.icon.icon-circle
-                |  Repsol
-              +table('tn-repsol', ['Name', 'Rating'], topNew.repsol)
+          +sntitle('Top New', 'drink')
+          +sncard([
+            { name: 'Twitter', icon: 'twitter', labels: ['Name', 'Score', 'Statuses', 'Evo'], data: topNew.twitter },
+            { name: 'Facebook', icon: 'facebook', labels: ['Name', 'Score', 'Fans', 'Evo'], data: topNew.facebook },
+            { name: 'Foursquare', icon: 'foursquare', labels: ['Name', 'Score', 'Rating', 'Evo'], data: topNew.foursquare },
+            { name: 'Yelp', icon: 'yelp', labels: ['Name', 'Score', 'Rating', 'Evo'], data: topNew.yelp },
+            { name: 'Tripadvisor', icon: 'tripadvisor', labels: ['Name', 'Score', 'Rating', 'Evo'], data: topNew.tripadvisor },
+            { name: 'Michelin', icon: 'star', labels: ['Name', 'Score', 'Stars', 'Evo'], data: topNew.michelin },
+            { name: 'Repsol', icon: 'circle', labels: ['Name', 'Score', 'Suns', 'Evo'], data: topNew.repsol },
+          ])
 
-          // top trendy
-          div.hr-divider.m-t-md.m-b
-            h3.hr-divider-content.hr-divider-heading Top Trendy
-          div.row
-            div.col-sm-3
-              h4
-                span.icon.icon-twitter
-                |  Twitter
-              +table('tn-twitter', ['Name', 'Count'], topTrendy.twitter)
-            div.col-sm-3
-              h4
-                span.icon.icon-facebook
-                |  Facebook
-              +table('tn-facebook', ['Name', 'Count'], topTrendy.facebook)
-            div.col-sm-3
-              h4
-                span.icon.icon-foursquare
-                |  Foursquare
-              +table('tn-foursquare', ['Name', 'Count'], topTrendy.foursquare)
-            div.col-sm-3
-              h4
-                span.icon.icon-yelp
-                |  Yelp
-              +table('tn-yelp', ['Name', 'Count'], topTrendy.yelp)
-          div.row.m-b
-            div.col-sm-3
-              h4
-                span.icon.icon-tripadvisor
-                |  Tripadvisor
-              +table('tn-tripadvisor', ['Name', 'Count'], topTrendy.tripadvisor)
-            div.col-sm-3
-              h4
-                span.icon.icon-star
-                |  Michelin
-              +table('tn-michelin', ['Name', 'Count'], topTrendy.michelin)
-            div.col-sm-3
-              h4
-                span.icon.icon-circle
-                |  Repsol
-              +table('tn-repsol', ['Name', 'Count'], topTrendy.repsol)
-
-          // top draft
-          div.hr-divider.m-t-md.m-b
-            h3.hr-divider-content.hr-divider-heading Top Draft
-          div.row
-            div.col-sm-3
-              h4
-                span.icon.icon-twitter
-                |  Twitter
-              +table('tn-twitter', ['Name', 'Delta'], topDraft.twitter)
-            div.col-sm-3
-              h4
-                span.icon.icon-facebook
-                |  Facebook
-              +table('tn-facebook', ['Name', 'Delta'], topDraft.facebook)
-            div.col-sm-3
-              h4
-                span.icon.icon-foursquare
-                |  Foursquare
-              +table('tn-foursquare', ['Name', 'Delta'], topDraft.foursquare)
-            div.col-sm-3
-              h4
-                span.icon.icon-yelp
-                |  Yelp
-              +table('tn-yelp', ['Name', 'Delta'], topDraft.yelp)
-          div.row.m-b
-            div.col-sm-3
-              h4
-                span.icon.icon-tripadvisor
-                |  Tripadvisor
-              +table('tn-tripadvisor', ['Name', 'Delta'], topDraft.tripadvisor)
-            div.col-sm-3
-              h4
-                span.icon.icon-star
-                |  Michelin
-              +table('tn-michelin', ['Name', 'Delta'], topDraft.michelin)
-            div.col-sm-3
-              h4
-                span.icon.icon-circle
-                |  Repsol
-              +table('tn-repsol', ['Name', 'Delta'], topDraft.repsol)
+          // top trending
+          +sntitle('Top Trending', 'direction')
+          +sncard([
+            { name: 'Twitter', icon: 'twitter', labels: ['Name', 'Score', 'Statuses', 'Evo'], data: topTrending.twitter },
+            { name: 'Facebook', icon: 'facebook', labels: ['Name', 'Score', 'Fans', 'Evo'], data: topTrending.facebook },
+            { name: 'Foursquare', icon: 'foursquare', labels: ['Name', 'Score', 'Rating', 'Evo'], data: topTrending.foursquare },
+            { name: 'Yelp', icon: 'yelp', labels: ['Name', 'Score', 'Rating', 'Evo'], data: topTrending.yelp },
+            { name: 'Tripadvisor', icon: 'tripadvisor', labels: ['Name', 'Score', 'Rating', 'Evo'], data: topTrending.tripadvisor },
+            { name: 'Michelin', icon: 'star', labels: ['Name', 'Score', 'Stars', 'Evo'], data: topTrending.michelin },
+            { name: 'Repsol', icon: 'circle', labels: ['Name', 'Score', 'Suns', 'Evo'], data: topTrending.repsol },
+          ])
         else
 
           // error message
