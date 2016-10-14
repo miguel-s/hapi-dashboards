@@ -5,7 +5,6 @@ include ./mixins/navs/dashhead.pug
 include ./mixins/components/table.pug
 include ./mixins/components/statcard.pug
 
-
 mixin sntitle(name, icon, collapse)
   div(style="cursor: pointer").hr-divider.p-y
     if collapse
@@ -18,7 +17,7 @@ mixin sntitle(name, icon, collapse)
         = ` ${name}`
 
 mixin sncard(id, collapse, rank, percentiles, kpis, info)
-  div(id=id class=(collapse ? "collapse in" : "")).row
+  div(id=id class=(collapse ? 'collapse in' : '')).row
     div.col-sm-4
       div.row.m-b
         div.col-sm-12
@@ -27,14 +26,14 @@ mixin sncard(id, collapse, rank, percentiles, kpis, info)
         if percentiles.length
           - const [city, total] = percentiles
           div.col-sm-6
-            +statcard('Pctl City', city.num, city.evo, 'text-center', city.num <= 10 ? 'success' : city.num <= 30 ? 'warning' : 'danger')
+            +statcard('Pctl City', city.num, city.evo, 'text-center', city.num === '-' ? 'default' : city.num <= 10 ? 'success' : city.num <= 30 ? 'warning' : 'danger')
           div.col-sm-6
-            +statcard('Pctl Total', total.num, total.evo, 'text-center', total.num <= 10 ? 'success' : total.num <= 30 ? 'warning' : 'danger')
+            +statcard('Pctl Total', total.num, total.evo, 'text-center', total.num === '-' ? 'default' : total.num <= 10 ? 'success' : total.num <= 30 ? 'warning' : 'danger')
     div.col-sm-5
       div.row
         if kpis.length
           each kpi in kpis
-            div(class=(kpis.length === 1 ? "col-sm-12" : "col-sm-6"))
+            div(class=(kpis.length === 1 ? 'col-sm-12' : 'col-sm-6'))
               +statcard(kpi.label, kpi.num, kpi.evo, 'text-center')
     div.col-sm-3
       div.row
@@ -76,28 +75,34 @@ append body
         +dashhead(name, id, true)
 
         // general
-        div.row.m-b
-          div(style="text-transform: capitalize").col-sm-2
-            h3.m-b-md
-              span.label.label-default= segment
-            h5.m-b
-              strong Province:
-              = ` ${province.toLowerCase()}`
-            h5.m-b
-              strong City:
-              = ` ${city.toLowerCase()}`
-            if district
-              h5.m-b
-                strong District:
-                = ` ${district.toLowerCase()}`
-          div.col-sm-4.col-sm-offset-1
-            +table(
-              '',
-              ['SKU', 'HL month', 'HL quarter'],
-              [{'sku': 'Mahou 5 estrellas', 'hlmonth': 1000, 'hlquarter': 3000}, {'sku': 'Mahou 5 estrellas', 'hlmonth': 1000, 'hlquarter': 3000}, {'sku': 'Mahou 5 estrellas', 'hlmonth': 1000, 'hlquarter': 3000}]
-            )
-          div.col-sm-4.col-sm-offset-1
-            div(data-lat=lat data-lon=lon)#map.w-full
+        div.row.m-b.m-t-lg
+          div(style="text-transform: capitalize").col-sm-4
+            div.row
+              div.col-sm-12
+                h3.m-b-md.m-t-0
+                  span.label.label-primary= segment
+                h5.m-b
+                  strong Province:
+                  = ` ${province.toLowerCase()}`
+                h5.m-b
+                  strong City:
+                  = ` ${city.toLowerCase()}`
+                if district
+                  h5.m-b
+                    strong District:
+                    = ` ${district.toLowerCase()}`
+            div.row
+              div.col-sm-12
+                div(data-lat=lat data-lon=lon)#map.w-full
+          div.col-sm-7.col-sm-offset-1
+            div.panel.panel-default
+              +table(
+                '',
+                ['Reference', 'HL one month', 'HL three months'],
+                sales
+              )
+              unless sales.length
+                h4.text-center.m-y No recent sales activity
 
         // Twitter
         +sntitle('Twitter', 'twitter', true)
@@ -107,8 +112,8 @@ append body
             true,
             { label: 'Fans', num: tw_statuses_count, evo: null },
             [
-              { num: 1, evo: null },
-              { num: 30, evo: null }
+              { num: tw_pctl_mun_statuses_count, evo: null },
+              { num: tw_pctl_total_statuses_count, evo: null }
             ],
             [
               { label: 'Statuses', num: tw_statuses_count, evo: 0.05 },
@@ -134,8 +139,8 @@ append body
             true,
             { label: 'Fans', num: fb_fan_count, evo: null },
             [
-              { num: 50, evo: null },
-              { num: 90, evo: null}
+              { num: fb_pctl_mun_fan_count, evo: null },
+              { num: fb_pctl_total_fan_count, evo: null}
             ],
             [],
             [{ label: 'Id', data: fb_id }]
@@ -154,8 +159,8 @@ append body
             true,
             { label: 'Rating', num: fs_rating, evo: null},
             [
-              { num: 1, evo: null },
-              { num: 30, evo: null}
+              { num: fs_pctl_mun_rating, evo: null },
+              { num: fs_pctl_total_rating, evo: null}
             ],
             [
               { label: 'Reviews', num: fs_rating_signals, evo: 0.05 },
@@ -182,8 +187,8 @@ append body
             true,
             { label: 'Rating', num: yp_rating, evo: null},
             [
-              { num: 30, evo: null },
-              { num: 80, evo: null}
+              { num: yp_pctl_mun_rating, evo: null },
+              { num: yp_pctl_total_rating, evo: null}
             ],
             [
               { label: 'Reviews', num: yp_review_count, evo: 0.05 }
@@ -207,8 +212,8 @@ append body
             true,
             { label: 'Rating', num: ta_rating, evo: null},
             [
-              { num: 1, evo: null },
-              { num: 30, evo: null}
+              { num: ta_pctl_mun_rating, evo: null },
+              { num: ta_pctl_total_rating, evo: null}
             ],
             [
               { label: 'Reviews', num: ta_num_reviews, evo: 0.05 }
@@ -231,10 +236,10 @@ append body
           +sncard(
             'michelin',
             true,
-            { label: 'Rating', num: mi_stars + mi_bib, evo: null},
+            { label: 'Stars', num: mi_stars !== '0' ? mi_stars : mi_bib === 'R' ? mi_bib : '-', evo: null},
             [
-              { num: 1, evo: null },
-              { num: 30, evo: null}
+              { num: '-', evo: null },
+              { num: '-', evo: null}
             ],
             [],
             [
@@ -253,10 +258,10 @@ append body
           +sncard(
             'repsol',
             true,
-            { label: 'Rating', num: rp_rating, evo: null},
+            { label: 'Suns', num: rp_rating, evo: null},
             [
-              { num: 1, evo: null },
-              { num: 30, evo: null}
+              { num: '-', evo: null },
+              { num: '-', evo: null}
             ],
             [],
             [
