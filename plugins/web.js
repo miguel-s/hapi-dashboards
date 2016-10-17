@@ -27,105 +27,16 @@ internals.after = (server, next) => {
 
   server.route([
     // authentication routes
-    {
-      method: 'GET',
-      path: '/login',
-      config: {
-        description: 'Returns a login form',
-        auth: { strategy: 'dashboards-session', mode: 'try' },
-        plugins: { 'hapi-auth-cookie': { redirectTo: false } },
-        handler: require('../controllers/login.js'),
-      },
-    },
-    {
-      method: 'POST',
-      path: '/login',
-      config: {
-        description: 'Returns a login form',
-        auth: { strategy: 'dashboards-session', mode: 'try' },
-        plugins: { 'hapi-auth-cookie': { redirectTo: false } },
-        validate: {
-          payload: require('../models/user.js'),
-          failAction: require('../controllers/login.js'),
-        },
-        handler: require('../controllers/login.js'),
-      },
-    },
-    {
-      method: 'GET',
-      path: '/logout',
-      config: {
-        description: 'Logout user',
-        handler: require('../controllers/logout.js'),
-      },
-    },
-    {
-      method: 'GET',
-      path: '/signup',
-      config: {
-        description: 'Returns a sinup form',
-        auth: { strategy: 'dashboards-session', mode: 'try' },
-        plugins: { 'hapi-auth-cookie': { redirectTo: false } },
-        handler: require('../controllers/signup.js'),
-      },
-    },
-    {
-      method: 'POST',
-      path: '/signup',
-      config: {
-        description: 'Returns a sinup form',
-        auth: { strategy: 'dashboards-session', mode: 'try' },
-        plugins: { 'hapi-auth-cookie': { redirectTo: false } },
-        validate: {
-          payload: require('../models/user.js'),
-          failAction: require('../controllers/signup.js'),
-        },
-        handler: require('../controllers/signup.js'),
-      },
-    },
+    require('../routes/get_login.js'),
+    require('../routes/post_login.js'),
+    require('../routes/get_logout.js'),
+    require('../routes/get_signup.js'),
+    require('../routes/post_signup.js'),
 
     // web routes
-    {
-      method: 'GET',
-      path: '/',
-      config: {
-        description: 'Returns the index page',
-        auth: { strategy: 'dashboards-session', mode: 'try' },
-        plugins: { 'hapi-auth-cookie': { redirectTo: '/login' } },
-        handler: require('../controllers/index.js'),
-      },
-    },
-    {
-      method: 'GET',
-      path: '/socialnetworks/overview',
-      config: {
-        description: 'Returns the social networks dashboard',
-        auth: { strategy: 'dashboards-session', mode: 'try' },
-        plugins: { 'hapi-auth-cookie': { redirectTo: '/login' } },
-        handler: require('../controllers/socialnetworks.js'),
-        validate: {
-          query: {
-            city: Joi.string().min(3).max(30).optional(),
-            district: Joi.string().min(3).max(30).optional(),
-          },
-        },
-      },
-    },
-    {
-      method: 'GET',
-      path: '/socialnetworks/venue/{id}',
-      config: {
-        description: 'Returns the venues dashboard',
-        auth: { strategy: 'dashboards-session', mode: 'try' },
-        plugins: { 'hapi-auth-cookie': { redirectTo: '/login' } },
-        handler: require('../controllers/socialnetworks_venue.js'),
-        validate: {
-          params: {
-            id: Joi.string().alphanum().length(12).optional(),
-          },
-        },
-      },
-    },
+    require('../routes/get_index.js'),
+    require('../routes/get_socialnetworks_overview.js'),
+    require('../routes/get_socialnetworks_venue.js'),
   ]);
 
   return next();
