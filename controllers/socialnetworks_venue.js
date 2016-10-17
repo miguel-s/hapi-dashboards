@@ -3,7 +3,7 @@
 const Boom = require('boom');
 
 module.exports = function handler(request, reply) {
-  const sales =  = new Promise((resolve, reject) => {
+  const sales = new Promise((resolve, reject) => {
     request.server.app.db.get('SELECT * FROM sn_venues_sales WHERE cd_pdv = ? ORDER BY 3 DESC', request.params.id,
     (err, row) => {
       if (err) reject(err);
