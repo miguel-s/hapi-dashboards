@@ -11,7 +11,7 @@ module.exports = function handler(request, reply) {
     });
   });
 
-  const data = new Promise((resolve, reject) => {
+  const details = new Promise((resolve, reject) => {
     request.server.app.db.get('SELECT * FROM sn_venues_details WHERE id = ?', request.params.id,
     (err, row) => {
       if (err) reject(err);
@@ -19,11 +19,11 @@ module.exports = function handler(request, reply) {
     });
   });
 
-  Promise.all([sales, data])
+  Promise.all([sales, details])
   .then((values) => {
-    const [sales, data] = values;
-    if (!data) return reply(Boom.notFound());
-    return reply.view('socialnetworks_venue', Object.assign({}, { sales }, data));
+    const [sales, details] = values;
+    if (!sales && !details) return reply(Boom.notFound());
+    return reply.view('socialnetworks_venue', Object.assign({}, { sales }, details));
   })
   .catch(err => reply(Boom.badImplementation(err)));
 };
