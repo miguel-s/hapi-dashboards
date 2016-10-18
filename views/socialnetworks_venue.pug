@@ -72,7 +72,7 @@ append body
       div.col-sm-offset-1.col-sm-10
 
         // dashhead
-        +dashhead(name, id, true)
+        +dashhead(details.name, details.id, true)
 
         // general
         div.row.m-b.m-t-lg
@@ -80,20 +80,20 @@ append body
             div.row
               div.col-sm-12
                 h3.m-b-md.m-t-0
-                  span.label.label-primary= segment
+                  span.label.label-primary= details.segment
                 h5.m-b
                   strong Province:
-                  = ` ${province.toLowerCase()}`
+                  = ` ${details.province.toLowerCase()}`
                 h5.m-b
                   strong City:
-                  = ` ${city.toLowerCase()}`
-                if district
+                  = ` ${details.city.toLowerCase()}`
+                if details.district
                   h5.m-b
                     strong District:
-                    = ` ${district.toLowerCase()}`
+                    = ` ${details.district.toLowerCase()}`
             div.row
               div.col-sm-12
-                div(data-lat=lat data-lon=lon)#map.w-full
+                div(data-lat=details.lat data-lon=details.lon)#map.w-full
           div.col-sm-7.col-sm-offset-1
             div.panel.panel-default
               +table(
@@ -106,23 +106,22 @@ append body
 
         // Twitter
         +sntitle('Twitter', 'twitter', true)
-        if tw_id
+        if details['tw.id']
           +sncard(
             'twitter',
             true,
-            { label: 'Fans', num: tw_statuses_count, evo: null },
+            { label: 'Statuses', num: details['tw.statusesCount'], evo: null },
             [
-              { num: tw_pctl_mun_statuses_count, evo: null },
-              { num: tw_pctl_total_statuses_count, evo: null }
+              { num: details['tw.pctl_mun_statuses_count'], evo: null },
+              { num: details['tw.pctl_total_statuses_count'], evo: null }
             ],
             [
-              { label: 'Statuses', num: tw_statuses_count, evo: 0.05 },
-              { label: 'Followers', num: tw_followers_count, evo: 0.05 }
+              { label: 'Followers', num: details['tw.followersCount'], evo: 0.05 }
             ],
             [
-              { label: 'Id', data: tw_id},
-              { label: 'Screen name', data: tw_screen_name},
-              { label: 'Created at', data: tw_create_at}
+              { label: 'Id', data: details['tw.id'] },
+              { label: 'Screen name', data: details['tw.screen_name'] },
+              { label: 'Created at', data: details['tw.created_at'] }
             ]
           )
         else
@@ -133,17 +132,19 @@ append body
 
         // Facebook
         +sntitle('Facebook', 'facebook', true)
-        if fb_id
+        if details['fb.id']
           +sncard(
             'facebook',
             true,
-            { label: 'Fans', num: fb_fan_count, evo: null },
+            { label: 'Fans', num: details['fb.fanCount'], evo: null },
             [
-              { num: fb_pctl_mun_fan_count, evo: null },
-              { num: fb_pctl_total_fan_count, evo: null}
+              { num: details['fb.pctl_mun_fan_count'], evo: null },
+              { num: details['fb.pctl_total_fan_count'], evo: null }
             ],
             [],
-            [{ label: 'Id', data: fb_id }]
+            [
+              { label: 'Id', data: details['fb.id'] }
+            ]
           )
         else
           div#facebook.row.collapse.in
@@ -151,26 +152,25 @@ append body
               div.well.text-center
                 p No data
 
-        // Foursquare`
+        // Foursquare
         +sntitle('Foursquare', 'foursquare', true)
-        if fs_id
+        if details['fs.id']
           +sncard(
             'foursquare',
             true,
-            { label: 'Rating', num: fs_rating, evo: null},
+            { label: 'Rating', num: details['fs.rating'], evo: null },
             [
-              { num: fs_pctl_mun_rating, evo: null },
-              { num: fs_pctl_total_rating, evo: null}
+              { num: details['fs.pctl_mun_rating'], evo: null },
+              { num: details['fs.pctl_total_rating'], evo: null }
             ],
             [
-              { label: 'Reviews', num: fs_rating_signals, evo: 0.05 },
-              { label: 'Checkins', num: fs_checkins_count, evo: 0.05 },
-              { label: 'Users', num: fs_users_count, evo: 0.05 },
-              { label: 'Tips', num: fs_tip_count, evo: 0.05 }
+              { label: 'Reviews', num: details['fs.ratingSignals'], evo: 0.05 },
+              { label: 'Checkins', num: details['fs.stats.checkinsCount'], evo: 0.05 },
+              { label: 'Users', num: details['fs.stats.usersCount'], evo: 0.05 }
             ],
             [
-              { label: 'Id', data: fs_id },
-              { label: 'Category', data: fs_category }
+              { label: 'Id', data: details['fs.id'] },
+              { label: 'Category', data: details['fs.categories'] }
             ]
           )
         else
@@ -181,21 +181,21 @@ append body
 
         // Yelp
         +sntitle('Yelp', 'yelp', true)
-        if yp_id
+        if details['yp.id']
           +sncard(
             'yelp',
             true,
-            { label: 'Rating', num: yp_rating, evo: null},
+            { label: 'Rating', num: details['yp.rating'], evo: null },
             [
-              { num: yp_pctl_mun_rating, evo: null },
-              { num: yp_pctl_total_rating, evo: null}
+              { num: details['yp.pctl_mun_rating'], evo: null },
+              { num: details['yp.pctl_total_rating'], evo: null }
             ],
             [
-              { label: 'Reviews', num: yp_review_count, evo: 0.05 }
+              { label: 'Reviews', num: details['yp.review_count'], evo: 0.05 }
             ],
             [
-              { label: 'Id', data: yp_id },
-              { label: 'Categories', data: [yp_categories_1, yp_categories_2, yp_categories_3, yp_categories_4, yp_categories_5].filter(i => i).join(', ') }
+              { label: 'Id', data: details['yp.id'] },
+              { label: 'Categories', data: [details['yp.categories.1'], details['yp.categories.2'], details['yp.categories.3'], details['yp.categories.4'], details['yp.categories.5]']].filter(i => i).join(', ') }
             ]
           )
         else
@@ -206,22 +206,22 @@ append body
 
         // Tripadvisor
         +sntitle('Tripadvisor', 'tripadvisor', true)
-        if ta_id
+        if details['ta.id']
           +sncard(
             'tripadvisor',
             true,
-            { label: 'Rating', num: ta_rating, evo: null},
+            { label: 'Rating', num: details['ta.rating'], evo: null },
             [
-              { num: ta_pctl_mun_rating, evo: null },
-              { num: ta_pctl_total_rating, evo: null}
+              { num: details['ta.pctl_mun_rating'], evo: null },
+              { num: details['ta.pctl_total_rating'], evo: null }
             ],
             [
-              { label: 'Reviews', num: ta_num_reviews, evo: 0.05 }
+              { label: 'Reviews', num: details['ta.numReviews'], evo: 0.05 }
             ],
             [
-              { label: 'Id', data: yp_id },
-              { label: 'Cuisine', data: ta_cuisine },
-              { label: 'Ranking', data: ta_ranking }
+              { label: 'Id', data: details['yp.id'] },
+              { label: 'Cuisine', data: details['ta.cuisine'] },
+              { label: 'Ranking', data: details['ta.ranking'] }
             ]
           )
         else
@@ -232,18 +232,18 @@ append body
 
         // Michelin
         +sntitle('Michelin', 'star', true)
-        if mi_id
+        if details['mi.id']
           +sncard(
             'michelin',
             true,
-            { label: 'Stars', num: mi_stars !== '0' ? mi_stars : mi_bib === 'R' ? mi_bib : '-', evo: null},
+            { label: 'Stars', num: details['mi.stars'] !== '0' ? details['mi.stars'] : details['mi.bib'] === 'R' ? details['mi.bib'] : '-', evo: null },
             [
               { num: '-', evo: null },
-              { num: '-', evo: null}
+              { num: '-', evo: null }
             ],
             [],
             [
-              { label: 'Id', data: mi_id }
+              { label: 'Id', data: details['mi.id'] }
             ]
           )
         else
@@ -254,18 +254,18 @@ append body
 
         // Repsol
         +sntitle('Repsol', 'circle', true)
-        if rp_id
+        if details['rp.id']
           +sncard(
             'repsol',
             true,
-            { label: 'Suns', num: rp_rating, evo: null},
+            { label: 'Suns', num: details['rp.rating'], evo: null },
             [
               { num: '-', evo: null },
-              { num: '-', evo: null}
+              { num: '-', evo: null }
             ],
             [],
             [
-              { label: 'Id', data: rp_id }
+              { label: 'Id', data: details['rp.id'] }
             ]
           )
         else

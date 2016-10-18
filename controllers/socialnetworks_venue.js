@@ -23,7 +23,7 @@ module.exports = function handler(request, reply) {
   .then((values) => {
     const [sales, details] = values;
     if (!sales && !details) return reply(Boom.notFound());
-    return reply.view('socialnetworks_venue', Object.assign({}, { sales }, details));
+    return reply.view('socialnetworks_venue', { sales, details });
   })
   .catch(err => reply(Boom.badImplementation(err)));
 };
