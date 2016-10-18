@@ -12,7 +12,7 @@ module.exports = function handler(request, reply) {
   });
 
   const details = new Promise((resolve, reject) => {
-    request.server.app.db.get('SELECT * FROM sn_venues_details WHERE id = ?', request.params.id,
+    request.server.app.db.get('SELECT * FROM sn_venues_details WHERE cd_pdv = ?', request.params.id,
     (err, row) => {
       if (err) reject(err);
       else resolve(row);

@@ -72,7 +72,7 @@ append body
       div.col-sm-offset-1.col-sm-10
 
         // dashhead
-        +dashhead(details.name, details.id, true)
+        +dashhead(details.nombre, details.cd_pdv, true)
 
         // general
         div.row.m-b.m-t-lg
@@ -80,17 +80,17 @@ append body
             div.row
               div.col-sm-12
                 h3.m-b-md.m-t-0
-                  span.label.label-primary= details.segment
+                  span.label.label-primary= details.especialidad_ibc
                 h5.m-b
                   strong Province:
-                  = ` ${details.province.toLowerCase()}`
+                  = ` ${details.provincia.toLowerCase()}`
                 h5.m-b
                   strong City:
-                  = ` ${details.city.toLowerCase()}`
-                if details.district
+                  = ` ${details.municipio.toLowerCase()}`
+                if details.distrito
                   h5.m-b
                     strong District:
-                    = ` ${details.district.toLowerCase()}`
+                    = ` ${details.distrito.toLowerCase()}`
             div.row
               div.col-sm-12
                 div(data-lat=details.lat data-lon=details.lon)#map.w-full
