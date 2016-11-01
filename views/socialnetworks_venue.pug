@@ -80,7 +80,11 @@ append body
             div.row
               div.col-sm-12
                 h3.m-b-md.m-t-0
-                  span.label.label-primary= details.especialidad_ibc
+                  span(style="display: inline-block").label.label-primary.w-full= details.especialidad_ibc
+            div.row
+              div.col-sm-6
+                +statcard('Score', details['score_ibc'], null, 'text-center', details['score_ibc'] === '-' ? 'default' : details['score_ibc'] >= 9 ? 'success' : details['score_ibc'] >= 7 ? 'warning' : 'danger')
+              div.col-sm-6
                 h5.m-b
                   strong Province:
                   = ` ${details.provincia.toLowerCase()}`
